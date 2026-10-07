@@ -13,6 +13,8 @@ when = """<title>This is AI Proxy Server by Ericwasepic127</title>
 app = Flask(__name__)
 CORS(app)
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+max_limit = os.environ.get("LIMIT", 4)
+requests_count = 0
 
 @app.route('/ready', methods=['GET'])
 def ready():
@@ -22,6 +24,8 @@ def ready():
 def chat():
     if request.method == 'GET':
         return when, 200
+    if requests_count >= max_limit:
+        return jsonify({"error": "Server busy"}), 503
     model = request.json.get("model", os.environ.get("OPENROUTER_MODEL", "openrouter/free"))
     user_messages = request.json.get("messages") 
     if not user_messages or not isinstance(user_messages, list):
