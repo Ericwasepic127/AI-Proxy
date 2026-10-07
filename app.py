@@ -106,7 +106,7 @@ def chat():
             response_data = response.json()
             requests_count -= 1
             if "error" in response_data:
-                return jsonify({"error": response_data["error"]}), response.status_code
+                return jsonify({"error": response_data["error"]["message"]}), response.status_code
             ai_response = response_data['choices'][0]['message']['content']
             return jsonify({"response": ai_response})
         except (BaseException, Exception) as e:
@@ -137,7 +137,7 @@ def chat():
                       if response.status_code != 200 or "error" in response_data:
                          if response.status_code in [429, 503]:
                               continue
-                         error = jsonify({"error": response_data["error"]}), response.status_code
+                         error = jsonify({"error": response_data["error"]["message"]}), response.status_code
                          print("Error:", response.json())
                          continue
                       ai_response = response_data['choices'][0]['message']['content']
