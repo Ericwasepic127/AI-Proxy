@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Fetch the OpenRouter API key from environment variables for security
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
-@app.route('/chat', methods=['POST'])
+@app.route('/', methods=['POST'])
 def chat():
     # 1. Grab the full messages array from the incoming request payload
     user_messages = request.json.get("messages") 
