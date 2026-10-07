@@ -43,12 +43,14 @@ def chat():
     }
     try:
         response = requests.post(url, headers=headers, json=payload)
+        requests_count -= 1
         response_data = response.json()
         if "error" in response_data:
             return jsonify({"error": response_data["error"]}), response.status_code
         ai_response = response_data['choices'][0]['message']['content']
         return jsonify({"response": ai_response})
     except (BaseException, Exception) as e:
+        requests_count -= 1
         return jsonify({"error": f"Internal proxy error: {str(e)}"}), 500
 
 if __name__ == '__main__':
