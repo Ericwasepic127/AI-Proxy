@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 import requests
+from flask_cors import CORS
 
 when = """<title>This is AI Proxy Server by Ericwasepic127</title>
 <h1>This is AI Proxy Server by Ericwasepic127</h1>
@@ -10,6 +11,7 @@ when = """<title>This is AI Proxy Server by Ericwasepic127</title>
 <strong>Or else, you will end up here</strong>"""
 
 app = Flask(__name__)
+CORS(app)
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 @app.route('/ready', methods=['GET'])
