@@ -9,12 +9,17 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 PROVIDERS = [
     {
         "name": "groq",
-        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "url": "https://api.groq.com/openai/v1/openai/chat/completions",
         "key_env": GROQ_API_KEY,
         "models": [
             "llama-3.3-70b-versatile",
             "llama-3.1-8b-instant",
             "mixtral-8x7b-32768",
+            "minimaxai/minimax-m2.7",
+            "openai/gpt-oss-20b",
+            "openai/gpt-oss-120b",
+            "whisper-large-v3",
+            "whisper-large-v3-turbo",
         ],
     },
     {
