@@ -2,10 +2,19 @@ import os
 from flask import Flask, request, jsonify
 import requests
 
+when = """<title>This is AI Proxy Server by Ericwasepic127</title>
+<h1>This is AI Proxy Server by Ericwasepic127</h1>
+<hr>
+<p>Use POST to get API response</p>
+<br>
+<strong>Or else, you will end up here</strong>"""
+
 app = Flask(__name__)
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def chat():
+    if request.method == 'GET':
+        return when, 200
     model = request.json.get("model", os.environ.get("OPENROUTER_MODEL", "openrouter/free"))
     user_messages = request.json.get("messages") 
     if not user_messages or not isinstance(user_messages, list):
