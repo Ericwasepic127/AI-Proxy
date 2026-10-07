@@ -11,6 +11,11 @@ when = """<title>This is AI Proxy Server by Ericwasepic127</title>
 
 app = Flask(__name__)
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+
+@app.route('/ready', methods=['GET'])
+def ready():
+     return "ok", 200
+
 @app.route('/', methods=['POST', 'GET'])
 def chat():
     if request.method == 'GET':
