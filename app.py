@@ -134,16 +134,16 @@ def chat():
                     try:
                       response = requests.post(url, headers=headers, json=payload)
                       response_data = response.json()
-                      requests_count -= 1
-                      if "error" in response_data:
+                      if not response.ok or "error" in response_data:
                          if response.status_code in [429, 503]:
                               continue
                          error = jsonify({"error": response_data["error"]}), response.status_code
+                         print("Error:", error[0])
                          continue
                       ai_response = response_data['choices'][0]['message']['content']
-##                      return jsonify({"response": ai_response, "used": f"{name}+{model}"})
-                    except (BaseException, Exception) as e:
                       requests_count -= 1
+                      return jsonify({"response": ai_response, "used": f"{name}+{model}"})
+                    except (BaseException, Exception) as e:
                       error = jsonify({"error": f"Internal proxy error: {str(e)}"}), 500
          return error or (jsonify({"error": "no models available right now"}), 503)
 
