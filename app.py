@@ -9,7 +9,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 PROVIDERS = [
     {
         "name": "groq",
-        "url": "https://api.groq.com/openai/v1/openai/chat/completions",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
         "key_env": GROQ_API_KEY,
         "models": [
             "llama-3.3-70b-versatile",
@@ -31,8 +31,8 @@ PROVIDERS = [
             "gemini-2.5-pro",
             #"gemini-flash-latest",
             #"gemini-3.8-flash",
-            #"gemini-3.7-flash",
-            #"gemini-3.6-flash",
+            "gemini-3.7-flash",
+            "gemini-3.6-flash",
             "gemini-3.5-flash",
             "gemini-2.5-flash-lite",
             "gemini-3.5-flash-lite",
@@ -134,17 +134,18 @@ def chat():
                     try:
                       response = requests.post(url, headers=headers, json=payload)
                       response_data = response.json()
-                      if not response.ok or "error" in response_data:
+                      if response.status_code != 200 or "error" in response_data:
                          if response.status_code in [429, 503]:
                               continue
                          error = jsonify({"error": response_data["error"]}), response.status_code
-                         print("Error:", error[0])
+                         print("Error:", response.json())
                          continue
                       ai_response = response_data['choices'][0]['message']['content']
                       requests_count -= 1
                       return jsonify({"response": ai_response, "used": f"{name}+{model}"})
                     except (BaseException, Exception) as e:
                       error = jsonify({"error": f"Internal proxy error: {str(e)}"}), 500
+                      print("Error:", error)
          return error or (jsonify({"error": "no models available right now"}), 503)
 
 if __name__ == '__main__':
