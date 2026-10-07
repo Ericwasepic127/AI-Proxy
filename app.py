@@ -14,7 +14,7 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 @app.route('/ready', methods=['GET'])
 def ready():
-     return "ok", 200
+     return "ok\n", 200
 
 @app.route('/', methods=['POST', 'GET'])
 def chat():
