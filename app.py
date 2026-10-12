@@ -81,17 +81,21 @@ def chat():
     auto = use == "auto"
     model = request.json.get("model")
     if not user_messages or not isinstance(user_messages, list):
+        requests_count -= 1
         return jsonify({"error": "A 'messages' array is required"}), 400
     if not auto and model:
         if use not in ["gemini", "openrouter", "groq"]:
+           requests_count -= 1
            return jsonify({"error": "Provider %s not found" % use}), 500
         index = ["groq", "gemini", "openrouter"].index(use)
         PROVIDER = PROVIDERS[index]
         key = PROVIDER["key_env"]
         if not key:
+            requests_count -= 1
             return jsonify({"error": "Missing API key for %s provider" % use}), 500
         url = PROVIDER["url"]
         if model not in PROVIDER["models"]:
+             requests_count -= 1
              return jsonify({"error": "Model not found"}), 404
         headers = {
             "Authorization": f"Bearer {key}",
@@ -146,6 +150,7 @@ def chat():
                     except (BaseException, Exception) as e:
                       error = jsonify({"error": f"Internal proxy error: {str(e)}"}), 500
                       print("Error:", error)
+         requests_count -= 1
          return error or (jsonify({"error": "no models available right now"}), 503)
 
 if __name__ == '__main__':
