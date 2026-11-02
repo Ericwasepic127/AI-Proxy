@@ -117,7 +117,7 @@ def ready():
      return "ok\n", 200
 
 @app.route('/', methods=['POST', 'GET'])
-@limiter.limit("5/minute")
+@limiter.limit("5/minute", error_message=jsonify({"error": {"message": "Too many requests!"}}))
 @handleReq
 def chat():
     if request.method == 'GET':
