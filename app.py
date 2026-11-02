@@ -5,6 +5,8 @@
 import flask, requests, os, threading as t
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -102,6 +104,12 @@ def handleReq(f):
 # PREPARE
 app = Flask(__name__)
 CORS(app)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://",
+)
 
 # HANDLERS
 @app.route('/ready', methods=['GET'])
@@ -109,6 +117,7 @@ def ready():
      return "ok\n", 200
 
 @app.route('/', methods=['POST', 'GET'])
+@limiter.limit("5/minute")
 @handleReq
 def chat():
     if request.method == 'GET':
@@ -178,6 +187,11 @@ def chat():
                 else:
                     error = response
               return error
+
+@app.route("/v1/chat/completions", methods=["POST", "GET"])
+@limiter.limit("5/minute")
+def fakeroute():
+    return {"error": {"message": "Invalid API Key","type": "invalid_request_error","code": "invalid_api_key"}}, 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=443 if getattr(os, "getuid", lambda: 1000)() == 0 else os.environ.get("AI_PORT", 5000))
