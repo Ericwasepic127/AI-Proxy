@@ -2,7 +2,7 @@
 # Made by @Ericwasepic127
 
 # IMPORTS
-import flask, requests, os, threading as t
+import flask, requests, os, threading as t, json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -117,7 +117,7 @@ def ready():
      return "ok\n", 200
 
 @app.route('/', methods=['POST', 'GET'])
-@limiter.limit("5/minute", error_message=jsonify({"error": {"message": "Too many requests!"}}))
+@limiter.limit("5/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
 @handleReq
 def chat():
     if request.method == 'GET':
@@ -189,7 +189,7 @@ def chat():
               return error
 
 @app.route("/v1/chat/completions", methods=["POST", "GET"])
-@limiter.limit("5/minute")
+@limiter.limit("5/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
 def fakeroute():
     return {"error": {"message": "Invalid API Key","type": "invalid_request_error","code": "invalid_api_key"}}, 400
 
