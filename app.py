@@ -75,7 +75,7 @@ def post(url, key, data):
             headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
             json=data
         )
-        return r.text, r.status_code
+        return r.text, r.status_code, r.ok
     except (BaseException, Exception) as e:
         return jsonify({"error": {
             "message": str(e),
@@ -117,7 +117,7 @@ def ready():
      return "ok\n", 200
 
 @app.route('/', methods=['POST', 'GET'])
-@limiter.limit("5/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
+@limiter.limit("7/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
 @handleReq
 def chat():
     if request.method == 'GET':
@@ -153,9 +153,9 @@ def chat():
                 continue
             for model in models:
                 reqjson["model"] = model
-                response = (post(url, key, reqjson))
-                if response[1] == 200:
-                    return response
+                response = list(post(url, key, reqjson))
+                if len(response) == 3 and response[2]:
+                    return *response[:-1]
                 else:
                     error = response
         return error
@@ -189,7 +189,7 @@ def chat():
               return error
 
 @app.route("/v1/chat/completions", methods=["POST", "GET"])
-@limiter.limit("5/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
+@limiter.limit("7/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
 def fakeroute():
     return {"error": {"message": "Invalid API Key","type": "invalid_request_error","code": "invalid_api_key"}}, 400
 
