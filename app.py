@@ -155,7 +155,7 @@ def chat():
                 reqjson["model"] = model
                 response = list(post(url, key, reqjson))
                 if len(response) == 3 and response[2]:
-                    return response[:-1]
+                    return tuple(response[:-1])
                 else:
                     error = response
         return error
