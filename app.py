@@ -129,6 +129,12 @@ def chat():
                 "code": "server_busy",
             }
         }), 503
+    if isinstance(request.json, list):
+        return jsonify({"error": {
+                "message": "Needs object, not array",
+                "type": "invaild_request_error",
+                "code": "bad_request",
+            }}), 400 
     reqjson = request.json.copy()
     use_model = reqjson.get("model")
     error =(jsonify({"error": {
@@ -158,7 +164,7 @@ def chat():
                     return tuple(response[:-1])
                 else:
                     error = response[:-1] if len(response) == 3 else response
-        return error
+        return tuple(error)
     else:
         config = PROVIDERS.get(PROVIDER)
         models = url = key = None
@@ -174,22 +180,22 @@ def chat():
              }}), 503
         
         if use_model:
-             return post(url, key, reqjson)
+             return post(url, key, reqjson, d=True)
         elif MODEL:
               reqjson["model"] = MODEL
-              return post(url, key, reqjson)
+              return post(url, key, reqjson, d=True)
         else:
               for model in models:
                 reqjson["model"] = model
-                response = (post(url, key, reqjson))
-                if response[1] == 200:
-                    return response
+                response = list(post(url, key, reqjson))
+                if len(response) == 3 and response[2]:
+                    return tuple(response[:-1])
                 else:
-                    error = response
-              return error
+                    error = response[:-1] if len(response) == 3 else response
+              return tuple(error)
 
 @app.route("/v1/chat/completions", methods=["POST", "GET"])
-@limiter.limit("7/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
+@limiter.limit("1/minute", error_message=json.dumps({"error": {"message": "Too many requests!"}}))
 def fakeroute():
     return {"error": {"message": "Invalid API Key","type": "invalid_request_error","code": "invalid_api_key"}}, 400
 
