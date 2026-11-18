@@ -157,7 +157,7 @@ def chat():
                 if len(response) == 3 and response[2]:
                     return tuple(response[:-1])
                 else:
-                    error = response
+                    error = response[:-1] if len(response) == 3 else response
         return error
     else:
         config = PROVIDERS.get(PROVIDER)
