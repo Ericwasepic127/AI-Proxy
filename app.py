@@ -68,13 +68,15 @@ PROVIDERS = {
 }
 
 # HELPERS /FUNCTIONS/
-def post(url, key, data):
+def post(url, key, data, d=False):
     try:
         r = requests.post(
             url,
             headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
             json=data
         )
+        if d:
+            return r.text, r.status_code
         return r.text, r.status_code, r.ok
     except (BaseException, Exception) as e:
         return jsonify({"error": {
