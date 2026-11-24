@@ -15,4 +15,4 @@ gunicorn app:app
 
 Host on platform like [Render](render.com)
 
-and get your URL like https://ai-proxy-wk3r.onrender.com/
+and get your URL like https://ai-proxy-x.onrender.com/
